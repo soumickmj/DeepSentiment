@@ -215,27 +215,6 @@ with open('./Pickledata/latest_rest_vd9_da_xsepdoconv_train_dataset_senti.pkl', 
 with open('./Pickledata/latest_rest_vd9_da_xsep_doconv_old_gt1.pkl', 'rb') as f:
     old_gt1 = pickle.load(f)
 
- #authors architecture rest
-#with open('./Pickledata/latest_rest_original_old_gt2.pkl','wb') as f:
-#doconv architecture rest
-#with open('./Pickledata/latest_rest_doconv_old_gt2.pkl','wb') as f:
-#xsepconv architecture rest
-#with open('./Pickledata/latest_rest_xsepconv_old_gt2.pkl','wb') as f:
-#2 xsepconv & 1 conv architecture rest
-#with open('./Pickledata/latest_rest_xsepconv2_old_gt2.pkl','wb') as f:
-# 1 xsepconv & 2 conv architecture rest
-#with open('./Pickledata/latest_rest_xsepconv3_old_gt2.pkl','wb') as f:
-# 1 xsepconv & 2 conv architecture lap
-#with open('./Pickledata/latest_lap_xsepconv3_old_gt2.pkl','wb') as f:
-# 2 xsepconv & 1 conv architecture lap
-#with open('./Pickledata/latest_lap_xsepconv2_old_gt2.pkl','wb') as f:
-# 3 xsepconv lap
-#with open('./Pickledata/latest_lap_xsepconv_old_gt2.pkl','wb') as f:
-# doconv architecture rest
-#with open('./Pickledata/latest_lap_doconv_old_gt2.pkl','wb') as f:
-# doconv architecture rest correct
-#with open('./Pickledata/latest_lap_doconv1_old_gt2.pkl', 'wb') as f:
- # author architecture lap
 #with open('./Pickledata/latest_lap_old_gt2.pkl','wb') as f:
 # xsep rest doconv rq3
 #with open('./Pickledata/latest_lap_vd17da1_xsep_doconv_old_gt2.pkl','wb') as f:
@@ -304,32 +283,6 @@ with open('./Pickledata/latest_rest_vd9_da_xsep_doconv_old_gt2.pkl', 'rb') as f:
 with open('./Pickledata/latest_rest_vd9_da_xsepdoconv_gt1.pkl', 'rb') as f:
     gt1 = pickle.load(f)
 
-#authors architecture rest
-#with open('./Pickledata/latest_rest_original_gt2.pkl','wb') as f:
-#doconv architecture rest
-#with open('./Pickledata/latest_rest_doconv_gt2.pkl', 'wb') as f:
-#xsepconv architecture rest
-#with open('./Pickledata/latest_rest_xsepconv_gt2.pkl', 'wb') as f:
-#2 xsepconv & 1 conv2d architecture rest
-#with open('/home/sowmya/Documents/Thesis/CorrectCode/WeakABSA/Pickledata/latest_rest_xsepconv2_gt2.pkl','wb') as f:
-#1 xsepconv & 2 conv2d architecture rest
-#with open('./Pickledata/latest_rest_xsepconv3_gt2.pkl', 'wb') as f:
-#1 xsepconv & 2 conv2d architecture lap
-#with open('./Pickledata/latest_lap_xsepconv3_gt2.pkl','wb') as f:
-# 1 xsepconv & 2 conv2d architecture lap
-#with open('./Pickledata/latest_lap_xsepconv2_gt2.pkl','wb') as f:
-# 3 xsepconv architecture lap
-#with open('./Pickledata/latest_lap_xsepconv_gt2.pkl','wb') as f:
-# doconv architecture lap
-#with open('./Pickledata/latest_lap_doconv_gt2.pkl', 'wb') as f:
-# doconv architecture lap
-#with open('./Pickledata/latest_lap_doconv1_gt2.pkl', 'wb') as f:
-# author architecture lap
-#with open('./Pickledata/latest_lap_gt2.pkl','wb') as f:
-# xsep doconv ae enhanced rest rq3
-# with open('./Pickledata/latest_rest_vd17da1_xsepdoconv_gt2.pkl','wb') as f:
-# xsep doconv ae enhanced rest vd9
- #with open('./Pickledata/latest_rest_vd9_xsepdoconv_gt2.pkl','wb') as f:
 # xsep doconv ae enhanced lap vd9
 #with open('./Pickledata/latest_lap_vd9_xsepdoconv_gt2.pkl','wb') as f:
 # xsep doconv ae enhanced lap vd17
@@ -452,7 +405,7 @@ senti_target_scores = target_score(senti_pred_distribution, 'senti')
 senti_pred_labels = senti_pred_distribution.argmax(-1)
 with open(os.path.join(dataset, 'prediction1.txt'), 'w') as fout:
     fout.write("Aspect.pred\tAspect.gt\tSenti.pred\tSenti.gt\n")
-    for k in range(0, len(aspect_pred_labels)):
+    for k in range(len(aspect_pred_labels)):
         fout.write(f"{aspect_pred_labels[k]}\t{old_gt1[k]}\t{1 - senti_pred_labels[k]}\t{old_gt2[k]}\n")
 print(f"Results written to {dataset}/prediction_oldmodel_NS.txt !")
 

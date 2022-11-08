@@ -28,7 +28,7 @@ def get_marginal_temb(vec_file):
     f = open(vec_file, 'r')
     contents = f.readlines()[1:]
     t_emb = []
-    for i, content in enumerate(contents):
+    for content in contents:
         content = content.strip()
         tokens = content.split(' ')
         word = tokens[0]
@@ -38,9 +38,7 @@ def get_marginal_temb(vec_file):
     return np.array(t_emb)
 # The code is completely from the weakly supervised code https://github.com/teapot123/JASen
 def get_temb_from_w(word_emb,topic2id):
-    t_emb = []
-    for t in topic2id:
-        t_emb.append(np.array(word_emb[t]))
+    t_emb = [np.array(word_emb[t]) for t in topic2id]
     return np.array(t_emb)
 # The code is completely from the weakly supervised code https://github.com/teapot123/JASen
 def get_emb(vec_file):
@@ -50,8 +48,7 @@ def get_emb(vec_file):
     word_emb = {}
     vocabulary = {}
     vocabulary_inv = {}
-    idx = 0
-    for i, content in enumerate(contents):
+    for idx, content in enumerate(contents):
         content = content.strip()
         tokens = content.split(' ')
         word = tokens[0]
@@ -61,8 +58,7 @@ def get_emb(vec_file):
         word_emb[word] = np.array(vec)
         vocabulary[word] = idx
         vocabulary_inv[idx] = word
-        idx += 1
-    print("# of vocabulary "+str(len(vocabulary)))
+    print(f"# of vocabulary {len(vocabulary)}")
     return word_emb, vocabulary, vocabulary_inv
 # The code is completely from the weakly supervised code https://github.com/teapot123/JASen
 def get_joint_temb(vec_file):
@@ -72,7 +68,7 @@ def get_joint_temb(vec_file):
     t_emb = []
     senti_topic = []
     aspect_topic = []
-    for i, content in enumerate(contents):
+    for content in contents:
         content = content.strip()
         tokens = content.split(' ')
         word = tokens[0]
@@ -115,7 +111,7 @@ def train_func(sub_train_, model, mode, optimizer):
     senti_train_acc = 0
     data = DataLoader(sub_train_, batch_size=batch_size, shuffle=True,
                       collate_fn=generate_batch)
-    for i, (text, cls, gt1, gt2) in enumerate(data):
+    for text, cls, gt1, gt2 in data:
         # print(f'size of text: {text.size()}')
         optimizer.zero_grad()
         # text, cls, gt1, gt2 = text.to(device), cls.to(device), gt1.to(device), gt2.to(device)
@@ -136,7 +132,7 @@ def train_func(sub_train_, model, mode, optimizer):
         elif mode == 'senti':
             pseudo_senti_train_acc += (output.argmax(1) == cls.argmax(1)).sum().item()
             senti_train_acc += (output.argmax(1) == (1-gt2)).sum().item()
-            
+
 
     # Adjust the learning rate
     # scheduler.step()
@@ -170,7 +166,7 @@ def batch_train_func(text, target, model, aspect):
     train_loss += loss.item()
     loss.backward()
     optimizer[aspect].step()
-    
+
     # Adjust the learning rate
     scheduler[aspect].step()
 
@@ -204,7 +200,7 @@ def test(data_, model, mode):
             elif mode == 'senti':
                 pseudo_senti_test_acc += (output.argmax(1) == cls.argmax(1) ).sum().item()
                 senti_test_acc += (output.argmax(1)  == (1-gt2)).sum().item()
-            
+
             pred_distribution.append(output)
 
     return loss / len(data_), aspect_test_acc / len(data_), senti_test_acc / len(data_), pseudo_aspect_test_acc / len(data_), pseudo_senti_test_acc / len(data_), torch.cat(pred_distribution, dim=0)
@@ -213,7 +209,7 @@ def test(data_, model, mode):
 def print_info(model_name, train_loss, aspect_test_acc, senti_test_acc, pseudo_aspect_test_acc, pseudo_senti_test_acc):
     secs = int(time.time() - start_time)
     mins = secs / 60
-    secs = secs % 60
+    secs %= 60
 
     print('Epoch: %d' %(epoch + 1), " | time in %d minutes, %d seconds" %(mins, secs))
     print(f'{model_name}\tLoss: {train_loss:.4f}(train)\t|\t')
@@ -241,7 +237,7 @@ def target_score(logits, aspect):
         weight = preds**1.2 #/ torch.sum(preds, dim=0)
     else:
         weight = preds**2 / torch.sum(preds, dim=0)
-    
+
     return (weight.t() / torch.sum(weight, dim=1)).t() 
 
 # The code is completely from the weakly supervised code https://github.com/teapot123/JASen
@@ -250,16 +246,16 @@ def high_conf_train_loader(all_text, gt, preds, class_num, conf_threshold=0.8):
     valid_idx = []
     threshold_benchmark = [0.8, 0.85, 0.9, 0.93, 0.95, 0.97]
     threshold_idx = defaultdict(list)
-    
+
     preds = F.softmax(preds)
     all_conf, all_pred_labels = torch.max(preds, dim=-1)
-    
+
     valid_idx = all_conf > conf_threshold
-    
-    for j, threshold in enumerate(threshold_benchmark):
+
+    for threshold in threshold_benchmark:
         match_idx = all_conf > threshold
         print(f"Threshold: {threshold}; num_samples: {len(all_pred_labels[match_idx])}; acc: {torch.sum(all_pred_labels[match_idx] == gt[match_idx]).item() / len(gt[match_idx])}")
-            
+
     current_text = all_text[valid_idx]
     labels = all_pred_labels[valid_idx]
     y_onehot = torch.FloatTensor(len(labels), class_num)
@@ -275,9 +271,7 @@ def reorder(target_scores, pred_labels, train_dataset, gt, all_text):
     target_scores = target_scores[sorted_idx]
     pred_labels = pred_labels[sorted_idx]
     gt = gt[sorted_idx]
-    new_dataset = []
-    for i in sorted_idx:
-        new_dataset.append(train_dataset[i])
+    new_dataset = [train_dataset[i] for i in sorted_idx]
     all_text = all_text[sorted_idx]
 
     return target_scores, pred_labels, new_dataset, gt, all_text

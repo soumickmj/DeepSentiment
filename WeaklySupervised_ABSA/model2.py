@@ -59,10 +59,7 @@ class CNN(nn.Module):
     def conv_block(self, input, conv_layer):
         conv_out = conv_layer(input)  # conv_out.size() = (batch_size, out_channels, dim, 1)
         activation = F.relu(conv_out.squeeze(3))  # activation.size() = (batch_size, out_channels, dim1)
-        max_out = F.max_pool1d(activation, activation.size()[2]).squeeze(
-            2)  # maxpool_out.size() = (batch_size, out_channels)
-
-        return max_out
+        return F.max_pool1d(activation, activation.size()[2]).squeeze(2)
 
     def forward(self, input_sentences, batch_size=None):
         """
@@ -102,7 +99,4 @@ class CNN(nn.Module):
         all_out = torch.cat((max_out1, max_out2, max_out3), 1)
         # all_out.size() = (batch_size, num_kernels*out_channels)
         fc_in = self.dropout(all_out)
-        # fc_in.size()) = (batch_size, num_kernels*out_channels)
-        logits = self.label(fc_in)
-
-        return logits
+        return self.label(fc_in)
